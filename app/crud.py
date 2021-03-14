@@ -1,10 +1,7 @@
 from sqlalchemy.orm import Session
 
 import models, schemas
-
-
-def get_contact(db: Session, id: int):
-    return db.query(models.Contact).filter(models.Contact.id == id).first()
+from werkzeug.security import generate_password_hash
 
 
 def get_contact_by_contact_id(db: Session, contact_id: str):
@@ -23,3 +20,22 @@ def create_contact(db: Session, contact: schemas.ContactSchema):
     db.commit()
     db.refresh(db_contact)
     return db_contact
+
+
+def create_user(db: Session, user: schemas.UserSchema):
+    db_user = models.User(
+        username=user.username, password=generate_password_hash(user.password)
+    )
+    db.add(db_user)
+    db.commit()
+    return db_user
+
+
+def get_user(db: Session, username: str):
+    return db.query(models.User).filter(models.User.username == username).first()
+
+
+def get_contact(db: Session, contact_id: int):
+    return (
+        db.query(models.Contact).filter(models.Contact.contact_id == contact_id).first()
+    )

@@ -17,3 +17,11 @@ class ContactsSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UserSchema(BaseModel):
+    username: str
+    password: str
+
+    class Config:
+        orm_mode = True
