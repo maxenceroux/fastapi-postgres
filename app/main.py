@@ -53,7 +53,11 @@ def create_contact(
 
 
 @app.post("/contacts", response_model=schemas.ContactsSchema)
-def create_contacts(contacts: schemas.ContactsSchema, db: Session = Depends(get_db)):
+def create_contacts(
+    contacts: schemas.ContactsSchema,
+    db: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme),
+):
     for ct in contacts.contacts:
         db_contact = crud.get_contact_by_contact_id(db, contact_id=ct.contact_id)
         if db_contact:
