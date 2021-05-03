@@ -26,3 +26,49 @@ services:
         - "80:80"
       depends_on:
         - web
+    prometheus:
+      image: prom/prometheus:latest
+      volumes:
+        - ./data/prometheus/config:/etc/prometheus/
+        - ./data/prometheus/data:/prometheus
+      command:
+        - '--config.file=/etc/prometheus/prometheus.yml'
+      expose:
+        - 9090
+      ports:
+        - 9090:9090
+    grafana:
+      image: grafana/grafana:latest
+      user: "1095759176:1095759176"
+      links:
+        - prometheus:prometheus
+      environment:
+        - GF_SECURITY_ADMIN_USER=admin
+        - GF_SECURITY_ADMIN_PASSWORD=admin
+      ports:
+        - 3000:3000
+      volumes:
+        - grafana-storage-fastapi:/var/lib/grafana
+    node-exporter:
+      image: prom/node-exporter:latest
+      expose:
+        - 9100
+  
+    cadvisor:
+      image: google/cadvisor:latest
+      volumes:
+        - /:/rootfs:ro
+        - /var/run:/var/run:rw
+        - /sys:/sys:ro
+        - /var/lib/docker/:/var/lib/docker:ro
+      expose:
+        - 8080
+    nginx-exporter:
+      image: fish/nginx-exporter
+      command:
+      - '-nginx.scrape_uri=http://nginx:80/stub_status'
+      ports:
+      - '9113:9113'
+volumes:
+  grafana-storage-fastapi:
+    external: true
