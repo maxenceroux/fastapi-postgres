@@ -18,3 +18,11 @@ services:
         POSTGRES_PASSWORD: postgres
         POSTGRES_USER: postgres
         POSTGRES_DB: postgres
+    nginx:
+      image: nginx:latest
+      volumes:
+        - ./conf.d:/etc/nginx/conf.d
+      ports:
+        - "80:80"
+      depends_on:
+        - web
